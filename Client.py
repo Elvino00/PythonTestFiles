@@ -46,12 +46,9 @@ def getPaths():
 
 def scanDir():
     input = client_socket.recv(1092).decode()
-    print(f"input: {input}")
     print("\nFile trovati:\n")
     count = 1
     file_number = []
-    choice = 0
-    choice2 = 0
     for root, dir, files in os.walk(input):
         for file in files:
             print(f"{count})  {file}")  # for file with full path   os.path.join(root,file)

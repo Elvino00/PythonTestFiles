@@ -59,11 +59,12 @@ def scanPaths(client_object):
             mod_string = mod_string.split(f'"{index})')
             result = '"'.join(mod_string)
             result = result.split(":")
+            result[0] = result[0].replace('"','')
+            result[1] = result[1].replace('"','')
             lines[str(result[0])] = str(result[1])
             index += 1
 
 
-    print(lines)
 
     return json.dumps(lines,indent=4).encode("utf-8")
 
