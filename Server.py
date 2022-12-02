@@ -44,12 +44,10 @@ def socketListen():
 
 def scanPaths(client_object):
     path_dict = client_object.recv(1092).decode()
-    #print(f"type of path_dict is {type(path_dict)}")
     print("Scegliere quale dei seguenti percorsi scannerizzare:")
     print(path_dict)
     choice = int(input())
     lines = {}
-
     path_dict = path_dict.replace('{', '')
     path_dict = path_dict.replace('}', '')
     index = 1
@@ -64,9 +62,9 @@ def scanPaths(client_object):
             lines[str(result[0])] = str(result[1])
             index += 1
 
+    path = list(lines.values())[choice-1]
 
-
-    return json.dumps(lines,indent=4).encode("utf-8")
+    return json.dumps(path,indent=4).encode("utf-8")
 
 
 

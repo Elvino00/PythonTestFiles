@@ -1,9 +1,9 @@
-import re
+import os
 
 
 
 def main():
-    stringa = "{" \
+    """stringa = "{" \
               "1) Desktop : /home/elvino/Desktop,\n" \
               "2) Downloads: /home/elvino/Downloads,\n" \
               "3) Templates: /home/elvino/Templates,\n" \
@@ -31,9 +31,18 @@ def main():
         path_dict[str(mod_string[0])] = str(mod_string[1])
 
 
-    print(path_dict)
+    print(path_dict)"""
 
-
+    path_str = "      /home/elvino/Desktop"
+    count = 1
+    file_number = []
+    path_str = path_str.replace(" ","")
+    for root, dir, files in os.walk(path_str):
+        for file in files:
+            print(f"{count})  {file}")  # for file with full path   os.path.join(root,file)
+            file_number.append(os.path.join(root, file))
+            # print(os.path.join(root,file))
+            count += 1
 
 
 
