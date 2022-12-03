@@ -48,68 +48,26 @@ def scanDir():
     input = client_socket.recv(1092).decode()
     input = input.replace('"','')
     input = input.replace(" ", "")
-    print("\nFile trovati:\n")
     count = 1
     file_number = []
     for root, dir, files in os.walk(input):
         for file in files:
-            print(f"{count})  {file}")
-            file_number.append(os.path.join(root, file))
+            file_number.append(os.path.join(root,file))
             count += 1
 
     return json.dumps(file_number).encode("utf-8")
 
-def downloadMenu():
-        choice = 0
+def uploaderFunction():
+   found_files = client_socket.recv(8192).decode()
+   found_files = json.loads(found_files)
 
-        print("\nVuoi scaricare qualcosa? \n1) Sì\n2) No")
+   time.sleep(3)
 
-        choice = int(input())
+   files_by_number = client_socket.recv(1092).decode()
+   files_by_number = json.loads(files_by_number)
 
-        if choice == 1:
-            print("Indicare con i numeri quali file scaricare. "
-                  "Per scaricare file consecutivamente scrivere '1-10' mentre per più file specifici, separarli con la virgola '1,3,5'.\n")
-            choice2 = input()
-            file_list = filteredList(choice2)
-            downloaderFunction(file_list)
-        else:
-            pass
 
-def calculate_range_number(start: int, end: int, list: list):
-    for i in range(start, end+1):
-        if not i in list:
-            list.append(i)
 
-def is_str_correct(str):
-    if str[len(str)-1] == "-" or str[len(str)-1] == ",":
-        return False
-
-    for i in range(0, len(str)):
-        if i == len(str)-1:
-            return True
-        if(str[i] == str[i+1]):
-            return False
-
-    return False
-
-def filteredList(rawList):
-    single_file_index = []
-    if is_str_correct(rawList):
-        first_split_str = rawList.split(",")
-
-        for i in first_split_str:
-            if not '-' in i:
-                if not int(i) in single_file_index:
-                    single_file_index.append(int(i))
-            else:
-                range = i.split('-')
-                calculate_range_number(int(range[0]), int(range[len(range) - 1]), single_file_index)
-        return single_file_index
-    else:
-        print("La stringa non è valida")
-
-def downloaderFunction():
-    pass
 
 def main():
     socketCreation()
@@ -118,6 +76,8 @@ def main():
     client_socket.send(info)
     time.sleep(5)
     file_numbers = scanDir()
+    client_socket.send(file_numbers)
+    uploaderFunction()
 
 
 if __name__ == "__main__":
