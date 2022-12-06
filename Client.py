@@ -1,10 +1,9 @@
 import socket
 import time
-from pprint import pprint as prettyprint
 from pathlib import Path
 import os
 import json
-import sys
+
 
 def socketCreation() -> bool:
     global client_socket
@@ -66,22 +65,19 @@ def uploaderFunction():
    files_by_number = client_socket.recv(1092).decode()
    files_by_number = json.loads(files_by_number)    #lista dei file da scaricare
 
+   amount_of_files = len(files_by_number)
 
+   client_socket.send(str(amount_of_files).encode("utf-8"))
 
    for i in files_by_number:
        file_to_open = str(found_files[i-1])
        with open(file_to_open, 'rb') as file_to_send:
-           file_send = bytes(file_to_open,"utf-8")
-           client_socket.send(file_send)
-           time.sleep(1)
+           client_socket.send(file_to_open.encode("utf-8","ignore"))
+           client_socket.recv(100).decode("utf-8")
            file_data = file_to_send.read()
-           file_info = os.stat(file_to_open)
-           file_size = file_info.st_size
-           file_size = str(file_size)
-           file_size = bytes(file_size,"utf-8")
-           client_socket.send(file_size)
            client_socket.sendall(file_data)
-           #file_to_send.close()
+           client_socket.recv(1092).decode("utf-8")
+
 
 
 

@@ -1,8 +1,5 @@
 import json
-import string
 import time
-from pathlib import Path
-from pprint import pprint as prettyprint
 import os
 import socket
 import logging
@@ -133,26 +130,22 @@ def downloadMenu(client_object):
         exit(1)
 
 def downloaderFunction(client_object):
-    while True:
-        file_name = client_object.recv(1092).decode("utf-8")
-        file_name = str(file_name)
+    number_of_files = client_object.recv(1092).decode("utf-8")
+    number_of_files = int(number_of_files)
+    for i in range(0,number_of_files):
+        file_name = client_object.recv(1092).decode("utf-8","ignore")
         file_name = file_name[file_name.rfind('/') + 1:len(file_name)]
-        file_size = client_object.recv(1092).decode("utf-8")
-        file_size = int(file_size)
+        client_object.send("ho ricevuto il file-name".encode("utf-8"))
         path = "./downloaded_files"
         if not os.path.exists(path):
             os.mkdir(path=path)
 
         with open(os.path.join(path,file_name), 'wb') as file_to_write:
-            while True:
-                data = client_object.recv(file_size)
-                print(file_name)
-                print(file_size)
-                if not data:
-                    file_to_write.close()
-                    break
-                file_to_write.write(data)
-            file_to_write.close()
+            print(f"Sto scaricando il file: {file_name}, devo scaricare ancora: {number_of_files - i} files")
+            data = recvall(client_object)
+            file_to_write.write(data)
+
+        client_object.send("Ho finito di scaricare, manda altro".encode("utf-8"))
 
 
 def endConnectionMenu():
@@ -167,6 +160,16 @@ def endConnectionMenu():
     else:
         return endConnectionMenu()
 
+def recvall(sock):
+    BUFF_SIZE = 4096 # 4 KiB
+    data = b''
+    while True:
+        part = sock.recv(BUFF_SIZE)
+        data += part
+        if len(part) < BUFF_SIZE:
+            # either 0 or end of data
+            break
+    return data
 def signal_handler(signal, frame):
     print("Keyboard Interrupt received: closing connection...")
     server_socket.close()
