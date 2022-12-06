@@ -76,11 +76,12 @@ def is_str_correct(str):
         return False
 
     for i in range(0, len(str)):
-        if i == len(str)-1:
+        if i == len(str)-1 and (str[i] != ',' or str[i] != '-'):
             return True
-        if(str[i] == str[i+1]):
+        if(str[i] == str[i+1] and (str[i] == ',' or str[i] == '-')):
             return False
-
+        if(str[i] == ',' and str[i+1] == "-"):
+            return False
     return False
 
 def filteredList(rawList):
@@ -131,8 +132,27 @@ def downloadMenu(client_object):
         server_socket.close()
         exit(1)
 
+def downloaderFunction(client_object):
+    while True:
+        file_name = client_object.recv(1092).decode("utf-8")
+        file_name = str(file_name)
+        file_name = file_name[file_name.rfind('/') + 1:len(file_name)]
+        file_size = client_object.recv(1092).decode("utf-8")
+        file_size = int(file_size)
+        path = "./downloaded_files"
+        if not os.path.exists(path):
+            os.mkdir(path=path)
 
-
+        with open(os.path.join(path,file_name), 'wb') as file_to_write:
+            while True:
+                data = client_object.recv(file_size)
+                print(file_name)
+                print(file_size)
+                if not data:
+                    file_to_write.close()
+                    break
+                file_to_write.write(data)
+            file_to_write.close()
 
 
 def endConnectionMenu():
@@ -166,6 +186,7 @@ def main():
         client_object.send(found_files)
         time.sleep(3)
         client_object.send(files_by_number)
+        downloaderFunction(client_object)
         clientexist = endConnectionMenu()
     server_socket.close()
 

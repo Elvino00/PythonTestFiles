@@ -25,16 +25,10 @@ def main():
 
 """
 
-    path_str = " /home/elvino/Desktop"
-    count = 1
-    file_number = []
-    path_str = path_str.replace(" ","")
-    for root, dir, files in os.walk(path_str):
-        for file in files:
-            print(f"{count})  {file}")  # for file with full path   os.path.join(root,file)
-            file_number.append(os.path.join(root, file))
-            # print(os.path.join(root,file))
-            count += 1
+"""    path = "home/elvino/Downloads/name.txt"
+    path = path[path.rfind("/")+1:len(path)]
+
+    print(path)"""
 
 
 
